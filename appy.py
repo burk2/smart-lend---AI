@@ -3,7 +3,10 @@ import pandas as pd
 import joblib
 import os
 
-# === Load the trained model ===
+#  Load custom CSS from external file 
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+#  Load the trained model 
 MODEL_PATH = "models/smartlend_model.pkl"
 
 @st.cache_resource
@@ -12,12 +15,12 @@ def load_model():
 
 model = load_model()
 
-# === Streamlit App UI ===
+#  Streamlit App UI 
 st.set_page_config(page_title="SmartLend AI", page_icon="💼")
 st.title("💼 SmartLend – Loan Default Risk Predictor")
 st.markdown("Upload borrower data and get instant default predictions with confidence scores.")
 
-# === File upload ===
+# File upload 
 uploaded_file = st.file_uploader("📁 Upload borrower data CSV", type="csv")
 
 if uploaded_file:
@@ -50,6 +53,6 @@ if uploaded_file:
 else:
     st.info("Please upload a CSV file with borrower data.")
 
-# === Footer ===
+#  Footer 
 st.markdown("---")
 st.caption("🔐 Built by Nollin Masai Wabuti • SmartLend AI • 2025")
