@@ -1,0 +1,27 @@
+body {
+    background-color: #f0f8ff; /* Light sky blue */
+}
+.main {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+h1 {
+    color: #1e90ff; /* Sky Blue Title */
+    text-align: center;
+}
+.stButton>button {
+    background-color: #ff7f50; /*
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+}
+.stButton>button:hover {
+    background-color: #ff6333;
+}
+.stFileUploader label {
+    color: #1e90ff;
+    font-weight: bold;
+}
