@@ -7,7 +7,7 @@ import os
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 #  Load the trained model 
-MODEL_PATH = "model/smartlend_model.pkl"
+MODEL_PATH = "smartlend_model.pkl"
 
 @st.cache_resource
 def load_model():
