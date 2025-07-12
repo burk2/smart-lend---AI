@@ -13,8 +13,8 @@ def load_model():
     return joblib.load("smartlend_model.pkl")
 
 @st.cache_resource
-def get_explainer(model):
-    explainer = shap.Explainer(model.predict, feature_names=[
+def get_explainer(_model):
+    explainer = shap.Explainer(_model.predict, feature_names=[
         "RevolvingUtilizationOfUnsecuredLines", "age",
         "NumberOfTime30-59DaysPastDueNotWorse", "DebtRatio", "MonthlyIncome",
         "NumberOfOpenCreditLinesAndLoans", "NumberOfTimes90DaysLate",
