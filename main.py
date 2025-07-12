@@ -1,89 +1,92 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import shap
+import matplotlib.pyplot as plt
 
 # === PAGE CONFIG ===
-st.set_page_config(page_title="SmartLend AI", page_icon="💼")
+st.set_page_config(page_title="SmartLend AI", page_icon="💼", layout="centered")
 
 # === LOAD MODEL ===
 @st.cache_resource
 def load_model():
     return joblib.load("smartlend_model.pkl")
 
-model = load_model()
+@st.cache_resource
+def get_explainer(model):
+    explainer = shap.Explainer(model.predict, feature_names=[
+        "RevolvingUtilizationOfUnsecuredLines", "age",
+        "NumberOfTime30-59DaysPastDueNotWorse", "DebtRatio", "MonthlyIncome",
+        "NumberOfOpenCreditLinesAndLoans", "NumberOfTimes90DaysLate",
+        "NumberRealEstateLoansOrLines", "NumberOfTime60-89DaysPastDueNotWorse",
+        "NumberOfDependents"
+    ])
+    return explainer
 
-# === SIDEBAR ===
+model = load_model()
+explainer = get_explainer(model)
+
+# === HEADER ===
+st.markdown("""
+<div style="background-color:#e6f0f8;padding:1.5rem;border-radius:10px;">
+    <h2 style="color:#005b96;">💼 SmartLend AI – Public Loan Risk Checker</h2>
+    <p>Use the form below to check if a borrower is likely to default on a loan. Built for everyone, no files needed.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# === SIDEBAR BRANDING ===
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/loan.png", width=80)
-    st.markdown("## 💼 SmartLend AI")
+    st.title("SmartLend AI")
     st.markdown("Built by **Nollin Masai Wabuti**")
-    st.markdown("[🌐 GitHub](https://github.com/your-username)")
-    st.markdown("📅 Version: 2025.1.0")
-    st.markdown("🔒 Powered by ML & AI")
+    st.markdown("📧 masainollin@gmail.com")
+    st.markdown("🌍 Kenya, 2025")
 
-# === TABS ===
-tab1, tab2, tab3 = st.tabs(["📁 Upload & Predict", "📊 Model Info", "ℹ️ About App"])
+# === USER FORM ===
+st.header("📝 Enter Borrower Details")
 
-# ========== TAB 1: Upload & Predict ==========
-with tab1:
-    st.header("📁 Upload Borrower Data & Predict Risk")
+with st.form("predict_form"):
+    age = st.number_input("Age", 18, 100, step=1)
+    income = st.number_input("Monthly Income", min_value=0.0)
+    debt_ratio = st.slider("Debt Ratio", 0.0, 5.0, step=0.01)
+    num_dependents = st.number_input("Number of Dependents", min_value=0, step=1)
+    revolving_util = st.slider("Revolving Utilization of Unsecured Lines", 0.0, 2.0, step=0.01)
+    num_30_59 = st.number_input("30-59 Days Late (past)", 0, 10, step=1)
+    num_60_89 = st.number_input("60-89 Days Late (past)", 0, 10, step=1)
+    num_90 = st.number_input("90+ Days Late (past)", 0, 10, step=1)
+    num_loans = st.number_input("Open Credit Lines and Loans", 0, 20, step=1)
+    num_real_estate = st.number_input("Real Estate Loans", 0, 10, step=1)
 
-    uploaded_file = st.file_uploader("Upload CSV file", type="csv")
+    submitted = st.form_submit_button("💡 Predict Loan Risk")
 
-    if uploaded_file:
-        try:
-            df = pd.read_csv(uploaded_file)
-            st.success("✅ File uploaded successfully!")
-            st.subheader("🔍 Preview of Uploaded Data")
-            st.dataframe(df.head())
+if submitted:
+    input_df = pd.DataFrame([{
+        "RevolvingUtilizationOfUnsecuredLines": revolving_util,
+        "age": age,
+        "NumberOfTime30-59DaysPastDueNotWorse": num_30_59,
+        "DebtRatio": debt_ratio,
+        "MonthlyIncome": income,
+        "NumberOfOpenCreditLinesAndLoans": num_loans,
+        "NumberOfTimes90DaysLate": num_90,
+        "NumberRealEstateLoansOrLines": num_real_estate,
+        "NumberOfTime60-89DaysPastDueNotWorse": num_60_89,
+        "NumberOfDependents": num_dependents
+    }])
 
-            # Predict
-            prediction = model.predict(df)
-            probability = model.predict_proba(df)[:, 1]
+    prediction = model.predict(input_df)[0]
+    probability = model.predict_proba(input_df)[0][1]
 
-            df["Default_Prediction"] = prediction
-            df["Default_Probability"] = probability
+    st.markdown("### ✅ Prediction Result")
+    st.success(f"Prediction: **{'Will Default' if prediction == 1 else 'No Default'}**")
+    st.metric("📊 Risk Probability", f"{probability:.2%}")
 
-            st.subheader("📊 Prediction Results")
-            st.dataframe(df[["Default_Prediction", "Default_Probability"]])
-
-            # Download results
-            csv = df.to_csv(index=False).encode("utf-8")
-            st.download_button("⬇️ Download Predictions", csv, file_name="smartlend_results.csv", mime="text/csv")
-
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-    else:
-        st.info("ℹ️ Upload a CSV file with borrower information to get started.")
-
-# ========== TAB 2: Model Info ==========
-with tab2:
-    st.header("📊 About the Machine Learning Model")
-    st.markdown("""
-    - ✅ **Trained on:** Public credit risk dataset
-    - 📈 **Model Type:** Random Forest Classifier
-    - 🧠 **Features Used:** Income, Age, Past Due History, Loans
-    - 🔍 **Label:** Loan Default within 2 years
-    - 📊 **Output:** Prediction (`0` or `1`) + Probability score
-
-    The model helps financial institutions quickly assess borrower risk.
-    """)
-
-# ========== TAB 3: About the App ==========
-with tab3:
-    st.header("ℹ️ About SmartLend AI")
-    st.markdown("""
-    **SmartLend AI** is a modern loan default prediction tool built for microfinance and fintech teams.
-
-    - 🧠 Built by: **Nollin Masai Wabuti**
-    - 🌍 Origin: Kenya
-    - 💡 Goal: Empower risk management using AI
-    - 🔗 GitHub: [Your Profile](https://github.com/your-username)
-    - ☁️ Hosted on: [Streamlit Cloud](https://streamlit.io)
-
-    Want to use this in production? Contact the developer.
-    """)
+    # === SHAP PLOT ===
+    st.markdown("### 🧠 Why? SHAP Explanation")
+    shap_values = explainer(input_df)
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    fig = shap.plots.waterfall(shap_values[0], show=False)
+    st.pyplot(fig)
 
 # === FOOTER ===
 st.markdown("---")
-st.caption("© 2025 SmartLend AI — Created with ❤️ by Nollin Masai Wabuti")
+st.caption("🔐 SmartLend AI • Powered by Nollin Masai • Streamlit • 2025")
