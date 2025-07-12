@@ -1,27 +1,41 @@
+/* Background and font */
 body {
-    background-color: #f0f8ff; /* Light sky blue */
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Segoe UI', sans-serif;
 }
-.main {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+
+/* Streamlit headers */
+h1, h2, h3 {
+    color: #00BFFF; /* Sky Blue */
 }
-h1 {
-    color: #1e90ff; /* Sky Blue Title */
-    text-align: center;
-}
-.stButton>button {
-    background-color: #ff7f50; /*
+
+/* Buttons */
+button, .stButton > button {
+    background-color: #00BFFF;
     color: white;
-    font-weight: bold;
     border: none;
     border-radius: 8px;
-}
-.stButton>button:hover {
-    background-color: #ff6333;
-}
-.stFileUploader label {
-    color: #1e90ff;
+    padding: 0.5em 1em;
     font-weight: bold;
+}
+
+/* Upload box */
+.css-1cpxqw2 {
+    background-color: #f0f8ff !important; /* Light sky blue */
+    border: 2px dashed #00BFFF !important;
+}
+
+/* Prediction table */
+.stDataFrame {
+    border: 1px solid #FFA500; /* Orange border */
+    border-radius: 6px;
+}
+
+/* Footer */
+footer, .footer {
+    color: #808080;
+    font-size: 0.85rem;
+    margin-top: 2em;
+    text-align: center;
 }
