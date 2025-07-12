@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import shap
-import matplotlib.pyplot as plt
 
 # === PAGE CONFIG ===
 st.set_page_config(page_title="SmartLend AI", page_icon="💼", layout="centered")
@@ -10,7 +8,8 @@ st.set_page_config(page_title="SmartLend AI", page_icon="💼", layout="centered
 # === LOAD MODEL ===
 @st.cache_resource
 def load_model():
-    return joblib.load("smartlend_model.pkl"
+    return joblib.load("smartlend_model.pkl")
+
 model = load_model()
 
 # === HEADER ===
@@ -66,13 +65,6 @@ if submitted:
     st.markdown("### ✅ Prediction Result")
     st.success(f"Prediction: **{'Will Default' if prediction == 1 else 'No Default'}**")
     st.metric("📊 Risk Probability", f"{probability:.2%}")
-
-    # === SHAP PLOT ===
-    st.markdown("### 🧠 Why? SHAP Explanation")
-    shap_values = explainer(input_df)
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    fig = shap.plots.waterfall(shap_values[0], show=False)
-    st.pyplot(fig)
 
 # === FOOTER ===
 st.markdown("---")
