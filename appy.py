@@ -5,9 +5,13 @@ import joblib
 import shap
 import matplotlib.pyplot as plt
 
-# === Custom CSS ===
-with open("style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# Load custom CSS safely
+def local_css(file_name):
+    with open(file_name, "r") as f:
+        css_content = f.read()
+        st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+
+local_css("style.css")
 
 # === Model Path ===
 MODEL_PATH = "smartlend_model.pkl"
