@@ -10,21 +10,8 @@ st.set_page_config(page_title="SmartLend AI", page_icon="💼", layout="centered
 # === LOAD MODEL ===
 @st.cache_resource
 def load_model():
-    return joblib.load("smartlend_model.pkl")
-
-@st.cache_resource
-def get_explainer(_model):
-    explainer = shap.Explainer(_model.predict, feature_names=[
-        "RevolvingUtilizationOfUnsecuredLines", "age",
-        "NumberOfTime30-59DaysPastDueNotWorse", "DebtRatio", "MonthlyIncome",
-        "NumberOfOpenCreditLinesAndLoans", "NumberOfTimes90DaysLate",
-        "NumberRealEstateLoansOrLines", "NumberOfTime60-89DaysPastDueNotWorse",
-        "NumberOfDependents"
-    ])
-    return explainer
-
+    return joblib.load("smartlend_model.pkl"
 model = load_model()
-explainer = get_explainer(model)
 
 # === HEADER ===
 st.markdown("""
