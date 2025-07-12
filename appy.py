@@ -4,6 +4,15 @@ import numpy as np
 import joblib
 import shap
 import matplotlib.pyplot as plt
+st.markdown("""
+    <style>
+    /* Force reload by using a unique tag */
+    h1 {
+        color: #FF0000 !important;  /* 🔴 Red to test */
+        font-size: 40px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Load custom CSS safely
 def local_css(file_name):
